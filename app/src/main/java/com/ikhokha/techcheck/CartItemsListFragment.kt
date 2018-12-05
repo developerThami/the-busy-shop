@@ -2,13 +2,16 @@ package com.ikhokha.techcheck
 
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -89,14 +92,34 @@ class CartItemListFragment : Fragment() {
 
     private fun scanBarcodeInformation(barcodeImageBitmap: Bitmap) {
 
+        val b = BitmapFactory.decodeResource(context!!.resources, R.drawable.barcode)
         val visionImage = FirebaseVisionImage.fromBitmap(barcodeImageBitmap)
 
         val detector = FirebaseVision.getInstance().visionBarcodeDetector
         detector.detectInImage(visionImage).addOnSuccessListener {
+
             for (barcode in it) {
                 val barcodeNumber = barcode.rawValue
                 getItemInformation(barcodeNumber!!)
             }
+
+            if (it.size == 0){
+
+                val builder = AlertDialog.Builder(context!!)
+                builder.setTitle("Scan Failed!")
+                builder.setMessage("Failed to scan item please re-scan barcode.")
+                builder.setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                }
+
+                builder.setPositiveButton("Try Again") { _, _ ->
+                    takeBarcodeImage()
+                }
+
+                builder.create().show()
+
+            }
+
         }.addOnFailureListener {
             Log.d("----error", it.localizedMessage)
         }

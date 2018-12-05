@@ -15,6 +15,7 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
     lateinit var context: Context
     private  var itemList: List<CartItem> = emptyList()
+        get() = field
 
     private var listener: OnItemSelectedListener? = null
 
@@ -26,6 +27,8 @@ class ItemAdapter : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
         this.itemList = itemList
         notifyDataSetChanged()
     }
+
+
 
     fun setListener( listener: OnItemSelectedListener) {
         this.listener = listener
